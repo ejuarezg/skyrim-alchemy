@@ -1,6 +1,8 @@
 name: Skyrim Alchemy Release
 
-# Source: https://vrom911.github.io/blog/github-actions-releases
+# References:
+# - https://kodimensional.dev/github-actions
+# - https://vrom911.github.io/blog/github-actions-releases
 
 on:
   # Trigger the workflow on the new 'v*' tag created
@@ -29,6 +31,7 @@ jobs:
 
       - name: Output Release URL File
         run: echo "${{ steps.create_release.outputs.upload_url }}" > release_url.txt
+
       - name: Save Release URL File for publish
         uses: actions/upload-artifact@v1
         with:
@@ -45,7 +48,7 @@ jobs:
         ghc:
           - "8.8.3"
           - "8.10.5"
-        cabal: ["3.2"]
+        stack: ["2.7.1"]
         exclude:
           - os: windows-latest
             ghc: 8.8.3
@@ -63,32 +66,25 @@ jobs:
 
       - name: Setup Haskell
         uses: haskell/actions/setup@v1.2.6
-        id: setup-haskell-cabal
         with:
           ghc-version: ${{ matrix.ghc }}
-          cabal-version: ${{ matrix.cabal }}
+          stack-version: ${{ matrix.stack }}
 
-      - name: Freeze
-        run: |
-          cabal freeze
-
-      - name: Cache ~/.cabal/store
-        uses: actions/cache@v1
+      - name: Cache ~/.stack
+        uses: actions/cache@v2.1.6
         with:
-          path: ${{ steps.setup-haskell-cabal.outputs.cabal-store }}
-          key: ${{ runner.os }}-${{ matrix.ghc }}-${{ hashFiles('cabal.project.freeze') }}
+          path: ~/.stack
+          key: ${{ runner.os }}-${{ matrix.ghc }}-stack-${{ hashFiles('stack.yaml') }}
 
       - name: Build binary
-        run: |
-          mkdir dist
-          cabal install exe:skyrim-alchemy --install-method=copy --overwrite-policy=always --installdir=dist
+        run: stack install --system-ghc --test --bench --no-run-tests --no-run-benchmarks
 
       - if: matrix.os == 'windows-latest'
         name: Set extension to .exe on Windows
         run: echo "EXT=.exe" >> $GITHUB_ENV
 
       - name: Set binary path name
-        run: echo "BINARY_PATH=./dist/skyrim-alchemy${{ env.EXT }}" >> $GITHUB_ENV
+        run: echo "BINARY_PATH=~/.local/bin/skyrim-alchemy${{ env.EXT }}" >> $GITHUB_ENV
 
       - name: Strip binary
         run: strip ${{ env.BINARY_PATH }}
