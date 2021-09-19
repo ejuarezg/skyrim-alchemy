@@ -44,7 +44,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest]
+        os: [ubuntu-latest]
         ghc:
           - "8.8.3"
           - "8.10.5"
@@ -74,7 +74,9 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.ghc }}-stack-${{ hashFiles('stack.yaml') }}
 
       - name: Set binary path name
-        run: echo "BINARY_PATH=$(stack path --local-bin)/skyrim-alchemy${{ env.EXT }}" >> $GITHUB_ENV
+        run: |
+          echo "BINARY_PATH=$(stack path --local-bin)/skyrim-alchemy${{ env.EXT }}" >> $GITHUB_ENV
+          echo "${{ env.BINARY_PATH }}"
 
       - name: Build binary
         run: |
