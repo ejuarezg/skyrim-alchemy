@@ -76,7 +76,6 @@ jobs:
       - name: Set binary path name
         run: |
           echo "BINARY_PATH=$(stack path --local-bin)/skyrim-alchemy" >> $GITHUB_ENV
-          echo "${env.BINARY_PATH}"
 
       - name: Build binary
         run: |
