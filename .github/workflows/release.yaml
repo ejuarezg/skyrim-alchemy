@@ -75,12 +75,12 @@ jobs:
 
       - name: Build binary
         run: |
-          stack install --system-ghc --test --bench --no-run-tests --no-run-benchmarks
+          stack install --system-ghc --no-run-tests --no-run-benchmarks
           cd ~/.local/bin
           mv skyrim-alchemy* skyrim-alchemy
 
       - name: Set binary path name
-        run: echo "BINARY_PATH=~/.local/bin/skyrim-alchemy${{ env.EXT }}" >> $GITHUB_ENV
+        run: echo "BINARY_PATH=$HOME/.local/bin/skyrim-alchemy${{ env.EXT }}" >> $GITHUB_ENV
 
       - name: Strip binary
         run: strip ${{ env.BINARY_PATH }}
