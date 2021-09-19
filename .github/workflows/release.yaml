@@ -46,8 +46,8 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         ghc:
-          - "8.8.3"
-          - "8.10.5"
+          - "9.0.1"
+          - "8.10.7"
         stack: ["2.7.1"]
 
     steps:
@@ -67,7 +67,7 @@ jobs:
           ghc-version: ${{ matrix.ghc }}
           stack-version: ${{ matrix.stack }}
 
-      - name: Cache ~/.stack
+      - name: Cache dependencies
         uses: actions/cache@v2.1.6
         with:
           path: ~/.stack
@@ -75,14 +75,13 @@ jobs:
 
       - name: Set binary path name
         run: |
-          echo "BINARY_PATH=$(stack path --local-bin)/skyrim-alchemy${{ env.EXT }}" >> $GITHUB_ENV
+          echo "BINARY_PATH=$(stack path --local-bin)/skyrim-alchemy" >> $GITHUB_ENV
           echo "${env.BINARY_PATH}"
 
       - name: Build binary
         run: |
           stack install --system-ghc --no-run-tests --no-run-benchmarks
-          cd ~/.local/bin
-          mv skyrim-alchemy* skyrim-alchemy
+          mv ${{ env.BINARY_PATH }}* ${{ env.BINARY_PATH }}
 
       - name: Strip binary
         run: strip ${{ env.BINARY_PATH }}
@@ -105,6 +104,6 @@ jobs:
         with:
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
           asset_path: ${{ env.BINARY_PATH }}
-          asset_name: skyrim-alchemy-${{ steps.tag.outputs.tag }}-${{ runner.os }}-ghc-${{ matrix.ghc }}${{ env.EXT }}
+          asset_name: skyrim-alchemy-${{ steps.tag.outputs.tag }}-${{ runner.os }}-ghc-${{ matrix.ghc }}
           asset_content_type: application/octet-stream
 
