@@ -358,3 +358,12 @@ hard to write---until you know enough and it becomes pleasant and
   
 - Emacs-specific: use `C-u 8 0 -` to place an 80-character line of
   dashes. Great for organizing a file.
+
+## Required libraries
+
+- ncurses
+
+### Manjaro Linux caveats
+
+- Perform the following symbolic link: `sudo ln -sf /usr/lib/libncursesw.so /usr/lib/libncurses.so.6`
+
